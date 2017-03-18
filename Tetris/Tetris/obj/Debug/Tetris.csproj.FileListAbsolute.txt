@@ -1,0 +1,18 @@
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.exe.config
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.exe
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.pdb
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.csprojResolveAssemblyReference.cache
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.MainForm.resources
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.Properties.Resources.resources
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.csproj.GenerateResource.Cache
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.exe
+C:\Users\Alexander Timothy\Skool\theProgramming\CSCD371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.pdb
+C:\Skool\371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.exe.config
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.exe
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.pdb
+C:\Skool\371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.exe
+C:\Skool\371\priceTetris\Tetris\Tetris\bin\Debug\Tetris.pdb
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.csprojResolveAssemblyReference.cache
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.MainForm.resources
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.Properties.Resources.resources
+C:\Skool\371\priceTetris\Tetris\Tetris\obj\Debug\Tetris.csproj.GenerateResource.Cache
