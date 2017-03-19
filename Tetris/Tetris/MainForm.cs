@@ -25,18 +25,28 @@ namespace Tetris
         public const int widthOfSquare = 40; //40px
         public int[,] mainGameBoard = new int[18, 10]; //each square is 40px by 40px
         TetrisShape fallingBlock = new TetrisShape();
-        Rectangle paintBoard = new Rectangle(49, 49, 405, 725);
+        Rectangle paintBoard = new Rectangle(49, 49, 400, 720);
         Thread t;
         public MainForm()
         {
             InitializeComponent();
-            //initializeGame();
+            initializeGame();
             manageFallingBlock();
             //t = new Thread(new ThreadStart(run));
             //t.Start();
         }
 
        
+
+        public void checkWin()
+        {
+
+
+
+
+
+        }
+
         
         public void initializeGame()
         {
@@ -55,9 +65,9 @@ namespace Tetris
         protected override void OnPaint(PaintEventArgs e) //loop through entire gameboard and look at each number to decide color to paint
         {
             //have a pen for drawing the falling block then a pen and brush for drawing the 
-            //gameboard  set the color every iteration
+            //gameboard  set the color every iteration fallingBlock.getColor(),
             Graphics graphic = e.Graphics;
-            Pen p = new Pen(fallingBlock.getColor(), 3);//pen for falling block
+            Pen p = new Pen(Color.Black, 5);//pen for falling block
             DoubleBuffered = true;
             Pen boardPen; //pen for board
             SolidBrush boardBrosh;
@@ -70,24 +80,22 @@ namespace Tetris
                 for (int j = 0; j < 10; j++)//columns are X
                 {
                     Point checkPoint = new Point(j, i);
-                    //split this if or statement up to check whether i need to paint falling block or 
-                    //the gameboard which will hvae diffeernt colors
+                    
                     if(fallingBlock.squarePoints.Contains(checkPoint) )
                     {
                         Rectangle r;
-                        graphic.DrawRectangle(p, getOffset(j), getOffset(i), 40, 40);
-                        r = new Rectangle(getOffset(j), getOffset(i), 40, 40);
+                        graphic.DrawRectangle(p, getOffset(j), getOffset(i), 35, 35);
+                        r = new Rectangle(getOffset(j), getOffset(i), 35, 35);
                         graphic.FillRectangle(brosh, r);
-                        //do switch here based on color but for now only doing one color
-                        //mainGameBoard[i, j] = 1;
+                        
                     }
 
                     if(mainGameBoard[i, j] != 0)
                     {
-
-                        Rectangle boardRect = new Rectangle(getOffset(j), getOffset(i), 40,40);
-                        boardPen = new Pen(colorLookUp(mainGameBoard[i, j]), 3);
-                        graphic.DrawRectangle(boardPen, getOffset(j), getOffset(i), 40, 40);
+                        //colorLookUp(mainGameBoard[i, j])
+                        Rectangle boardRect = new Rectangle(getOffset(j), getOffset(i), 35,35);
+                        boardPen = new Pen(Color.Black, 5);
+                        graphic.DrawRectangle(boardPen, getOffset(j), getOffset(i), 35, 35);
                         boardBrosh = new SolidBrush(colorLookUp(mainGameBoard[i, j]));
                         graphic.FillRectangle(boardBrosh, boardRect);
 
@@ -99,23 +107,7 @@ namespace Tetris
 
               }
 
-
-                    /*for(int i =0; i<18; i++)
-                    {
-
-                        for(int j = 0; j< 10; j++)
-                        {
-                            if (mainGameBoard[i,j] != 0)
-                            {
-                                graphic.DrawRectangle(p, getOffset(j), getOffset(i), 40, 40);
-
-                            }
-
-                        }
-
-                    }
-                    
-                    */
+            
 
 
 
@@ -143,7 +135,7 @@ namespace Tetris
                     return Color.Purple;
 
                 case 6:
-                    return Color.OrangeRed;
+                    return Color.Orange;
 
                 case 7:
                     return Color.HotPink;
@@ -259,6 +251,7 @@ namespace Tetris
 
         public bool moveDown()
         {
+           
             Point p;
             for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
             {
@@ -270,6 +263,7 @@ namespace Tetris
                 }
 
             }
+            
             return true;
 
 
@@ -291,7 +285,7 @@ namespace Tetris
                     fallingBlock.squarePoints[i] = new Point(p.X, p.Y + 1);
                     
                 }
-
+                fallingBlock.topLeft = new Point(fallingBlock.topLeft.X, fallingBlock.topLeft.Y + 1);
                 Invalidate();
             }
 
@@ -379,6 +373,7 @@ namespace Tetris
 
 
             }
+            fallingBlock.topLeft = new Point(fallingBlock.topLeft.X-1, fallingBlock.topLeft.Y );
             Invalidate();
 
 
@@ -415,11 +410,73 @@ namespace Tetris
 
 
             }
+            fallingBlock.topLeft = new Point(fallingBlock.topLeft.X + 1, fallingBlock.topLeft.Y );
             Invalidate();
 
 
         }
 
+
+        public bool canRotateCCW(int degree)
+        {
+           
+        
+
+            int xOrig = fallingBlock.squarePoints[2].X;
+            int yOrig = fallingBlock.squarePoints[2].Y;
+            double rad = (Math.PI * degree) / 180;
+            int[,] rotationMatrix = new int[2, 2];
+            rotationMatrix[0, 0] = (int)Math.Cos(rad);
+            rotationMatrix[1, 1] = (int)Math.Cos(rad);
+            rotationMatrix[0, 1] = -(int)Math.Sin(rad);
+            rotationMatrix[1, 0] = (int)Math.Sin(rad);
+            for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
+            {
+                int[,] pointVector = new int[2, 1];
+                pointVector[0, 0] = fallingBlock.squarePoints[i].X - xOrig;
+                pointVector[1, 0] = fallingBlock.squarePoints[i].Y - yOrig;
+                int tempX = ((rotationMatrix[0, 0] * pointVector[0, 0]) + (rotationMatrix[0, 1] * pointVector[1, 0])) + xOrig;
+                int tempy = ((rotationMatrix[1, 0] * pointVector[0, 0]) + (rotationMatrix[1, 1] * pointVector[1, 0])) + yOrig;
+                if(tempX > 9 || tempX < 0 || tempy > 17 || tempy < 0 || mainGameBoard[tempy,tempX] != 0)
+                {
+                    return false;
+                }
+
+
+            }
+            return true;
+
+
+        }
+
+    
+
+        public void rotateCCW()
+        {
+
+            fallingBlock.setRotatedShapePoints(90);
+
+          /*  if(fallingBlock.shapeColor == 1)
+            {
+
+                fallingBlock.topLeft = new Point(fallingBlock.topLeft.Y, fallingBlock.topLeft.X);
+                fallingBlock.squarePoints[0] = new Point(fallingBlock.topLeft.X, fallingBlock.topLeft.Y);
+
+                Point p;
+                for(int i = 1; i < fallingBlock.squarePoints.Count; i ++)
+                {
+                    
+                    p = fallingBlock.squarePoints[i];
+                    fallingBlock.squarePoints[i] = new Point(fallingBlock.topLeft.X + 1, fallingBlock.topLeft.Y);
+
+                }
+
+
+            }
+            */
+            Invalidate();
+
+        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -438,6 +495,29 @@ namespace Tetris
                     moveRight();
 
                 }
+
+            }
+
+            if(keyData == Keys.Up)
+            {
+                if(canRotateCCW(90))
+                {
+                    rotateCCW();
+
+
+                }
+
+
+            }
+            if (keyData == Keys.Down)
+            {
+                if (canRotateCCW(-90))
+                {
+                    rotateCCW();
+
+
+                }
+
 
             }
 
