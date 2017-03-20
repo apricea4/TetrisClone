@@ -15,11 +15,15 @@ using System.Collections;
 
 
 namespace Tetris
-{
+{   
+
+    //TODO: make menu to start stop and pause game, fix row dropping, dont let square rotate, randomize start positions for figures
     public partial class MainForm : Form
     {
-
-
+        public bool gameRunning = false;
+        public int level = 1;
+        public int score = 0;
+        public int curLevelRowsClear = 0;
         public const int topOffset = 50;
         public const int leftOffset = 50;
         public const int widthOfSquare = 40; //40px
@@ -40,12 +44,165 @@ namespace Tetris
 
         public void checkWin()
         {
+            List<int> rowsToBeCleared = new List<int>(); 
+            int consecutiveRows = 0;
+            for(int i = 0; i<10; i++)
+            {
+                if(mainGameBoard[0,i] != 0)
+                {
+                    gameRunning = false;
+                    //tmrMoveBlock.Enabled = false;
+                    MessageBox.Show("loser");
+                }
+
+
+            }
+
+            for(int j = 17; j > -1; j--)
+            {
+                int tmpColsFull = 0;
+                for(int k = 9; k > -1; k--)
+                {
+                   if(mainGameBoard[j,k] != 0)
+                    {
+                        
+                        tmpColsFull++;
+                    }
+
+
+                }
+                if(tmpColsFull == 10)
+                {
+                    rowsToBeCleared.Add(j);
+                    consecutiveRows++;
+                    curLevelRowsClear++;
+
+                }
+
+
+            }
+
+
+            
+            
+            if(consecutiveRows > 0)
+            {
+                score += getScore(consecutiveRows);
+                clearRows(rowsToBeCleared);
 
 
 
+            }
+            lblScore.Text = score.ToString();
+            if(curLevelRowsClear >= 10)
+            {
+                clearLevel();
+
+            }
+
+        }
+
+        public void clearRows(List<int> clear)
+        {
+            int lowestRow = 0;
+            int highestRow = 18;
+            for(int i = 0; i<clear.Count; i++)
+            {
+                int clearRow = clear[i];
+                if(clearRow > lowestRow)
+                {
+                    lowestRow = clearRow;
+                }
+
+                if(clearRow < highestRow)
+                {
+                    highestRow = clearRow;
+                }
+
+                for(int j = 0; j < 10; j++)
+                {
+                    mainGameBoard[clearRow, j] = 0;
+
+
+
+                }
+
+
+            }
+
+            while (highestRow <= lowestRow)//where I move rows down, rows still float and get pushed down too far, maybe start at lowest row and go up from there 
+            {//not sure if that will fix floating rows might need more checks than highest>lowerst
+
+
+
+                for (int j = 17; j > -1; j--)
+                {
+
+                    for (int k = 9; k > -1; k--)
+                    {
+                        if (j - 1 < 0)
+                        {
+                            break;
+                        }
+                        mainGameBoard[j, k] = mainGameBoard[j - 1, k];
+
+
+                    }
+
+
+
+
+                }
+
+                highestRow += 1;
+
+            }
+
+
+
+            Invalidate();
 
 
         }
+
+        public int getScore(int consecutiveRows)
+        {
+
+            if (consecutiveRows > 1)
+            {
+                return (((100 * level) * consecutiveRows) + ((50 * level) * consecutiveRows)) - 50;
+            }
+           
+            else return 100;
+            
+            
+            
+
+
+        }
+
+
+
+        public void clearLevel()
+        {
+
+            for (int i = 0; i < 18; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    mainGameBoard[i, j] = 0;
+
+                }
+
+            }
+            level++;
+            tmrMoveBlock.Interval = (int)(tmrMoveBlock.Interval * .75);
+            curLevelRowsClear = 0;
+            return;
+
+
+        }
+
 
         
         public void initializeGame()
@@ -59,6 +216,11 @@ namespace Tetris
                 }
 
             }
+            score = 0;
+            curLevelRowsClear = 0;
+            level = 1;
+            gameRunning = true;
+            return;
 
         }
 
@@ -227,6 +389,10 @@ namespace Tetris
 
 
             //fallingBlock.container = fallingBlock.getRandomShape();
+            if(!gameRunning)
+            {
+                return;
+            }
             fallingBlock = new TetrisShape();
             tmrMoveBlock.Enabled = true;
             
@@ -299,7 +465,7 @@ namespace Tetris
                     mainGameBoard[pr.Y, pr.X] = fallingBlock.shapeColor;
 
                 }
-
+                checkWin();
                 manageFallingBlock();
 
             }
@@ -478,6 +644,28 @@ namespace Tetris
 
         }
 
+        public void dropDown()
+        {
+            while(moveDown())
+            {
+                for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
+                {
+                    Point p = fallingBlock.squarePoints[i];//
+                    fallingBlock.squarePoints[i] = new Point(p.X, p.Y + 1);
+
+                }
+                fallingBlock.topLeft = new Point(fallingBlock.topLeft.X, fallingBlock.topLeft.Y + 1);
+                
+            }
+
+            Invalidate();
+
+
+        }
+
+
+
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if(keyData == Keys.Left)
@@ -520,6 +708,15 @@ namespace Tetris
 
 
             }
+
+
+            if(keyData == Keys.Space)
+            {
+                dropDown();
+
+
+            }
+
 
 
             return base.ProcessCmdKey(ref msg, keyData);
