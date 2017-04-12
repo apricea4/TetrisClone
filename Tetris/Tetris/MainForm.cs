@@ -23,6 +23,7 @@ namespace Tetris
         public bool gameRunning = false;
         public int level = 1;
         public int score = 0;
+        public int highScore = 0;
         public int curLevelRowsClear = 0;
         public const int topOffset = 50;
         public const int leftOffset = 50;
@@ -30,14 +31,23 @@ namespace Tetris
         public int[,] mainGameBoard = new int[18, 10]; //each square is 40px by 40px
         TetrisShape fallingBlock = new TetrisShape();
         Rectangle paintBoard = new Rectangle(49, 49, 400, 720);
-        Thread t;
+        
         public MainForm()
         {
             InitializeComponent();
-            initializeGame();
-            manageFallingBlock();
-            //t = new Thread(new ThreadStart(run));
-            //t.Start();
+            lblScore.Text = "Score " + score.ToString();
+            lblLevel.Text = "Level " + level.ToString();
+
+            for (int i = 0; i < 18; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    mainGameBoard[i, j] = 0;
+
+                }
+
+            }
+           
         }
 
        
@@ -51,8 +61,10 @@ namespace Tetris
                 if(mainGameBoard[0,i] != 0)
                 {
                     gameRunning = false;
-                    //tmrMoveBlock.Enabled = false;
+                    
                     MessageBox.Show("loser");
+                    newToolStripMenuItem.Enabled = true;
+                    return;
                 }
 
 
@@ -75,7 +87,24 @@ namespace Tetris
                 {
                     rowsToBeCleared.Add(j);
                     consecutiveRows++;
-                    curLevelRowsClear++;
+                    curLevelRowsClear++; 
+                    for(int c = 0; c< 10; c++)
+                    {
+                        
+                        mainGameBoard[j, c] = 0;
+
+
+
+                    }
+                    clearRowsv2(j);
+                    j++;
+                    
+
+
+
+                    
+
+
 
                 }
 
@@ -88,82 +117,42 @@ namespace Tetris
             if(consecutiveRows > 0)
             {
                 score += getScore(consecutiveRows);
-                clearRows(rowsToBeCleared);
+                if(score > highScore)
+                {
+                    highScore = score;
+                }
 
 
 
             }
-            lblScore.Text = score.ToString();
-            if(curLevelRowsClear >= 10)
+            if(curLevelRowsClear > 9)
             {
                 clearLevel();
 
             }
+            lblScore.Text = "Score " + score.ToString();
+            Invalidate();
+           
 
         }
 
-        public void clearRows(List<int> clear)
+        public void clearRowsv2(int rowStart)
         {
-            int lowestRow = 0;
-            int highestRow = 18;
-            for(int i = 0; i<clear.Count; i++)
+
+            for(int j = rowStart; j > 0; j--)
             {
-                int clearRow = clear[i];
-                if(clearRow > lowestRow)
+                for(int i = 9; i > - 1; i--)
                 {
-                    lowestRow = clearRow;
-                }
-
-                if(clearRow < highestRow)
-                {
-                    highestRow = clearRow;
-                }
-
-                for(int j = 0; j < 10; j++)
-                {
-                    mainGameBoard[clearRow, j] = 0;
-
-
+                    mainGameBoard[j, i] = mainGameBoard[j - 1, i];
 
                 }
-
 
             }
-
-            while (highestRow <= lowestRow)//where I move rows down, rows still float and get pushed down too far, maybe start at lowest row and go up from there 
-            {//not sure if that will fix floating rows might need more checks than highest>lowerst
-
-
-
-                for (int j = 17; j > -1; j--)
-                {
-
-                    for (int k = 9; k > -1; k--)
-                    {
-                        if (j - 1 < 0)
-                        {
-                            break;
-                        }
-                        mainGameBoard[j, k] = mainGameBoard[j - 1, k];
-
-
-                    }
-
-
-
-
-                }
-
-                highestRow += 1;
-
-            }
-
-
-
             Invalidate();
 
-
         }
+
+   
 
         public int getScore(int consecutiveRows)
         {
@@ -173,7 +162,7 @@ namespace Tetris
                 return (((100 * level) * consecutiveRows) + ((50 * level) * consecutiveRows)) - 50;
             }
            
-            else return 100;
+            else return 100 * level;
             
             
             
@@ -186,18 +175,12 @@ namespace Tetris
         public void clearLevel()
         {
 
-            for (int i = 0; i < 18; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    mainGameBoard[i, j] = 0;
-
-                }
-
-            }
+            
             level++;
+            MessageBox.Show("You advanced to level " + level.ToString());
             tmrMoveBlock.Interval = (int)(tmrMoveBlock.Interval * .75);
             curLevelRowsClear = 0;
+            lblLevel.Text = "Level " + level.ToString();
             return;
 
 
@@ -220,6 +203,8 @@ namespace Tetris
             curLevelRowsClear = 0;
             level = 1;
             gameRunning = true;
+
+            
             return;
 
         }
@@ -254,7 +239,7 @@ namespace Tetris
 
                     if(mainGameBoard[i, j] != 0)
                     {
-                        //colorLookUp(mainGameBoard[i, j])
+                        
                         Rectangle boardRect = new Rectangle(getOffset(j), getOffset(i), 35,35);
                         boardPen = new Pen(Color.Black, 5);
                         graphic.DrawRectangle(boardPen, getOffset(j), getOffset(i), 35, 35);
@@ -309,86 +294,14 @@ namespace Tetris
         }
 
 
-        /* public void run()
-         {
-             //Point p;
-
-             //probaly can keep threading just check that when changing to array that the reference is kept and y value is actually changed.
-
-            // while (true)
-             //{
-
-
-
-                 for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
-                 {
-                     Point p = fallingBlock.squarePoints[i];
-                      fallingBlock.squarePoints[i] = new Point(p.X, p.Y + 1);
-
-
-                 }
-                 Invalidate();
-                 //Thread.Sleep(1000);
-             //}
-             int containerR;
-             int containerC = fallingBlock.gameBoardRef[1];
-             while (fallingBlock.gameBoardRef[0] < 18)
-             {
-                 containerR = fallingBlock.gameBoardRef[0];
-
-
-                 for (int GR = 0; GR < 18; GR++)
-                 {
-                     for (int GC = 0; GC < 10; GC++)
-
-                     {
-                         //if(!(container - gr > 3) && !(containerR - gc > 3)
-                         if(containerR - GR < 4 && containerR - GR > -1 && containerR - GC < 4 && containerR - GC > -1) 
-                         //if (!(GR + containerR >=(2 * containerR) - 1) && !(GC + containerR >= (2 * containerR) - 1))
-                         {
-                             mainGameBoard[GR, GC] = fallingBlock.container[GR, GC];
-
-                         }
-
-
-                     }
-                 }
-
-                 Invalidate();
-                 Thread.Sleep(500);
-                 fallingBlock.gameBoardRef[0] += 1;
-
-             }
-
-
-
-
-         }
-         */
-
-        /*public bool containerContained(int gRow, int gCol) //TODO: FINISH THIS METHOD TO CHECK IF THE CURRENT INDEXS ARE IN THE CONTAINER ARRAY
-        {
-
-            int topRRow = fallingBlock.gameBoardRef[0] - 3;
-            Point gameBoardPoint = new Point(gRow, gCol);
-            Point curContainPoint;
-            for(int i = topRRow; i< topRRow + 3; i ++)
-            {
-                for(int j = fallingBlock.gameBoardRef[1]; j < fallingBlock.gameBoardRef[1] +3;  )
-
-
-            }
-
-
-        }
-        */
+       
 
 
         public void manageFallingBlock()
         {
 
 
-            //fallingBlock.container = fallingBlock.getRandomShape();
+            
             if(!gameRunning)
             {
                 return;
@@ -396,7 +309,7 @@ namespace Tetris
             fallingBlock = new TetrisShape();
             tmrMoveBlock.Enabled = true;
             
-            //tmrMoveBlock.Tick += tmrMoveBlock_Tick;
+            
 
 
             
@@ -442,7 +355,7 @@ namespace Tetris
 
         private void tmrMoveBlock_Tick(object sender, EventArgs e)
         {
-
+            
             if(moveDown())
             {
                 for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
@@ -469,41 +382,7 @@ namespace Tetris
                 manageFallingBlock();
 
             }
-            //manageFallingBlock();
-
-            /*  for (int i = 0; i < fallingBlock.squarePoints.Count; i++)
-              {
-
-
-
-                  Point p = fallingBlock.squarePoints[i];//
-                  fallingBlock.squarePoints[i] = new Point(p.X, p.Y + 1);
-                  if (p.Y + 2 > 17 || mainGameBoard[p.Y + 2,p.X] != 0 )
-                  {
-
-                      tmrMoveBlock.Stop();
-                      Point pr;
-                      for(int j = 0; j < fallingBlock.squarePoints.Count; j++)
-                      {
-                          pr = fallingBlock.squarePoints[j];
-                          mainGameBoard[pr.Y, pr.X] = 1;
-
-                      }
-                      manageFallingBlock();
-                      break;
-
-                      //tmrMoveBlock.Stop();
-
-                       //manageFallingBlock();
-
-
-                  }
-
-
-
-
-              }
-              Invalidate();*/
+           
         }
 
         public bool canMoveLeft()
@@ -622,24 +501,7 @@ namespace Tetris
 
             fallingBlock.setRotatedShapePoints(90);
 
-          /*  if(fallingBlock.shapeColor == 1)
-            {
-
-                fallingBlock.topLeft = new Point(fallingBlock.topLeft.Y, fallingBlock.topLeft.X);
-                fallingBlock.squarePoints[0] = new Point(fallingBlock.topLeft.X, fallingBlock.topLeft.Y);
-
-                Point p;
-                for(int i = 1; i < fallingBlock.squarePoints.Count; i ++)
-                {
-                    
-                    p = fallingBlock.squarePoints[i];
-                    fallingBlock.squarePoints[i] = new Point(fallingBlock.topLeft.X + 1, fallingBlock.topLeft.Y);
-
-                }
-
-
-            }
-            */
+         
             Invalidate();
 
         }
@@ -668,6 +530,10 @@ namespace Tetris
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if(!gameRunning)
+            {
+                return false; 
+            }
             if(keyData == Keys.Left)
             {
                 if(canMoveLeft())
@@ -716,10 +582,57 @@ namespace Tetris
 
 
             }
+            if(keyData == Keys.Home)
+            {
+                clearLevel();
 
+            }
 
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+       
+
+        private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            goToolStripMenuItem.Enabled = true;
+            pauseToolStripMenuItem.Enabled = false;
+            tmrMoveBlock.Enabled = false;
+            gameRunning = false;
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Tetris game by Alex Price v1.9 March 23 2017. \nCurrent high score for this session is " + highScore.ToString(),"About", MessageBoxButtons.OK,MessageBoxIcon.Information);
+        }
+
+        private void goToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            gameRunning = true;
+            
+            goToolStripMenuItem.Enabled = false;
+            pauseToolStripMenuItem.Enabled = true;
+            tmrMoveBlock.Enabled = true;
+            return;
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            gameRunning = true;
+            initializeGame();
+            manageFallingBlock();
+            newToolStripMenuItem.Enabled = false;
+            pauseToolStripMenuItem.Enabled = true;
+            tmrMoveBlock.Enabled = true;
+            return;
+
         }
     }
 

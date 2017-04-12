@@ -18,7 +18,7 @@ namespace Tetris
         public List<Point> squarePoints;
         public int shapeColor;
         public Point topLeft;
-        public int rotateAngle;
+       
 
 
         public TetrisShape() 
@@ -48,10 +48,15 @@ namespace Tetris
 
            if(shapeNum == 2)
             {
-                this.squarePoints.Add(new Point(4, 0));
-                this.squarePoints.Add(new Point(3, 0));
-                this.squarePoints.Add(new Point(3, 1));
-                this.squarePoints.Add(new Point(3, 2));
+                int x = randy.Next(9);
+                while(x < 1)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 0));
+                this.squarePoints.Add(new Point(x-1, 0));
+                this.squarePoints.Add(new Point(x-1, 1));
+                this.squarePoints.Add(new Point(x-1, 2));
                 this.shapeColor = 2;
 
             }
@@ -59,11 +64,15 @@ namespace Tetris
 
            if(shapeNum == 3)
             {
-
-                this.squarePoints.Add(new Point(1, 0));
-                this.squarePoints.Add(new Point(2, 0));
-                this.squarePoints.Add(new Point(2, 1));
-                this.squarePoints.Add(new Point(2, 2));
+                int x = randy.Next(9);
+                while(x > 8)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 0));
+                this.squarePoints.Add(new Point(x+1, 0));
+                this.squarePoints.Add(new Point(x+1, 1));
+                this.squarePoints.Add(new Point(x+1, 2));
                 this.shapeColor = 3;
 
 
@@ -71,10 +80,15 @@ namespace Tetris
             
            if(shapeNum == 4)
             {
-                this.squarePoints.Add(new Point(2, 0));
-                this.squarePoints.Add(new Point(2, 1));
-                this.squarePoints.Add(new Point(3, 0));
-                this.squarePoints.Add(new Point(3, 1));
+                int x = randy.Next(9);
+                while(x >8)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 0));
+                this.squarePoints.Add(new Point(x, 1));
+                this.squarePoints.Add(new Point(x+1, 0));
+                this.squarePoints.Add(new Point(x+1, 1));
                 this.shapeColor = 4;
 
 
@@ -82,10 +96,15 @@ namespace Tetris
 
            if(shapeNum == 5)
             {
-                this.squarePoints.Add(new Point(1, 0));
-                this.squarePoints.Add(new Point(1, 1));
-                this.squarePoints.Add(new Point(2, 1));
-                this.squarePoints.Add(new Point(2, 2));
+                int x = randy.Next(9);
+                while(x > 8)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 0));
+                this.squarePoints.Add(new Point(x, 1));
+                this.squarePoints.Add(new Point(x+1, 1));
+                this.squarePoints.Add(new Point(x+1, 2));
                 this.shapeColor = 5;
 
 
@@ -93,10 +112,15 @@ namespace Tetris
 
            if(shapeNum == 6)
             {
-                this.squarePoints.Add(new Point(1, 1));
-                this.squarePoints.Add(new Point(2, 0));
-                this.squarePoints.Add(new Point(2, 1));
-                this.squarePoints.Add(new Point(3, 1));
+                int x = randy.Next(9);
+                while(x > 6)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 1));
+                this.squarePoints.Add(new Point(x+1, 0));
+                this.squarePoints.Add(new Point(x+1, 1));
+                this.squarePoints.Add(new Point(x+2, 1));
                 this.shapeColor = 6;
 
 
@@ -104,11 +128,15 @@ namespace Tetris
 
            if(shapeNum == 7)
             {
-
-                this.squarePoints.Add(new Point(2, 0));
-                this.squarePoints.Add(new Point(1, 1));
-                this.squarePoints.Add(new Point(2, 1));
-                this.squarePoints.Add(new Point(1, 2));
+                int x = randy.Next(9);
+                while(x == 0)
+                {
+                    x = randy.Next(9);
+                }
+                this.squarePoints.Add(new Point(x, 0));
+                this.squarePoints.Add(new Point(x-1, 1));
+                this.squarePoints.Add(new Point(x, 1));
+                this.squarePoints.Add(new Point(x-1, 2));
                 this.shapeColor = 7;
 
 
